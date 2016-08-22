@@ -60,6 +60,7 @@ def parse_QA(ques_type='yes/no'):
         return NotImplementedError
 
 def gen_vocab():
+    global vocab_size
     ques_train, ans_train, _, ques_val, ans_val, _ = parse_QA()
     word_idx = 0
     for ques in ques_train:
@@ -70,6 +71,10 @@ def gen_vocab():
                 word_idx += 1
     vocab['UNK'] = word_idx
     vocab_size = word_idx
+
+def get_vocab_size():
+    global vocab_size
+    return vocab_size
 
 def encode_text(text):
     text = filter_text(text)

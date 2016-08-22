@@ -6,7 +6,7 @@ sys.path.append('../utils')
 
 from vgg16 import VGG16, img_feats
 from model_QA import modelQA
-from text_handler import parse_QA, gen_vocab, encode_text, encode_ans, vocab_size
+from text_handler import parse_QA, gen_vocab, encode_text, encode_ans, get_vocab_size
 import skimage.io as io
 from keras.preprocessing.sequence import pad_sequences
 import numpy as np
@@ -17,6 +17,7 @@ IMG_DIR = '/home/shashank/data/VQA/dataset/VQAorg/Images/train2014/'
 def vqa_mlp(batch_size=32, epochs=10, max_len=10):
     vgg = VGG16(include_top=True, weights='imagenet')
     gen_vocab()
+    vocab_size = get_vocab_size()
     model = modelQA(vocab_size, 4096, 300, max_len)
     ques_train, ans_train, img_train, ques_val, ans_val, img_val = parse_QA()
     # Parse all training images and load them into memory
@@ -40,8 +41,9 @@ def vqa_mlp(batch_size=32, epochs=10, max_len=10):
                 Img_feats = np.array(Img_feats)
                 Img_feats = Img_feats.reshape(batch_size, 4096)
 
-                pdb.set_trace()
-                model.train_on_batch([Img_feats, ques_feats], labels)
+               # pdb.set_trace()
+                loss = model.train_on_batch([Img_feats, ques_feats], labels)
+                print(loss)
                 batch_ind = 0
                 Img_feats = []
                 ques_feats = []
