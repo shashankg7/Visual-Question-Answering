@@ -42,8 +42,8 @@ def vqa_mlp(batch_size=32, epochs=10, max_len=10):
                 Img_feats = Img_feats.reshape(batch_size, 4096)
 
                # pdb.set_trace()
-                loss = model.train_on_batch([Img_feats, ques_feats], labels)
-                print(loss)
+                loss, acc = model.train_on_batch([Img_feats, ques_feats], labels)
+                print("Loss for epoch %d is %f with accuracy %f"%(epoch, loss, acc))
                 batch_ind = 0
                 Img_feats = []
                 ques_feats = []
