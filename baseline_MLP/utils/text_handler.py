@@ -16,6 +16,8 @@ QUES_VAL_PATH = '%s/Questions/MultipleChoice_mscoco_val2014_questions.json'%(DIR
 vqa_train = VQA(ANNOTATION_TRAIN_PATH, QUES_TRAIN_PATH)
 vqa_val = VQA(ANNOTATION_VAL_PATH, QUES_VAL_PATH)
 vocab = {}
+vocab_size = 0
+
 
 def filter_text(text):
     text = text.lower()
@@ -67,9 +69,9 @@ def gen_vocab():
                 vocab[word] = word_idx
                 word_idx += 1
     vocab['UNK'] = word_idx
+    vocab_size = word_idx
 
-
-def encode_text(self, text):
+def encode_text(text):
     text = filter_text(text)
     res = []
     for word in text.split():
@@ -78,6 +80,12 @@ def encode_text(self, text):
         else:
             res.append(vocab['UNK'])
     return res
+
+def encode_ans(ans):
+    if ans == 'yes':
+        return 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":

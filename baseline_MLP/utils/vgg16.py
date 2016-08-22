@@ -148,21 +148,21 @@ def VGG16(include_top=True, weights='imagenet',
             model.load_weights(weights_path)
             if K.backend() == 'theano':
                 convert_all_kernels_in_model(model)
-
+    # get features from second last layer of VGGnet
     descriptor = K.function([img_input], model.layers[-2].output)
     return descriptor
 
 
+descriptor = VGG16(include_top=True, weights='imagenet')
 
 def img_feats(img_path, include_top=True, input_tensor=None):
-
+    # Get image descriptor from VGGnet
     img = image.load_img(img_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
-    pdb.set_trace()
+    #pdb.set_trace()
     # get descriptor of the given image
-    descriptor = VGG16(include_top=True, weights='imagenet')
     img2vec = descriptor([x])
     return img2vec
 
