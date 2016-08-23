@@ -13,11 +13,12 @@ ANNOTATION_TRAIN_PATH = '%s/Annotations/mscoco_train2014_annotations.json'%(DIR)
 ANNOTATION_VAL_PATH = '%s/Annotations/mscoco_val2014_annotations.json'%(DIR)
 QUES_TRAIN_PATH = '%s/Questions/MultipleChoice_mscoco_train2014_questions.json'%(DIR)
 QUES_VAL_PATH = '%s/Questions/MultipleChoice_mscoco_val2014_questions.json'%(DIR)
+GLOVE_PATH = '%s/WordEmbeddings/glove.6B.100d.txt'%(DIR)
 vqa_train = VQA(ANNOTATION_TRAIN_PATH, QUES_TRAIN_PATH)
 vqa_val = VQA(ANNOTATION_VAL_PATH, QUES_VAL_PATH)
 vocab = {}
 vocab_size = 0
-
+embedding_dim = 100
 
 def filter_text(text):
     text = text.lower()
@@ -62,6 +63,7 @@ def parse_QA(ques_type='yes/no'):
 def gen_vocab():
     global vocab_size
     ques_train, ans_train, _, ques_val, ans_val, _ = parse_QA()
+    #pdb.set_trace()
     word_idx = 0
     for ques in ques_train:
         ques = filter_text(ques)
@@ -92,7 +94,25 @@ def encode_ans(ans):
     else:
         return 0
 
+def load_embeddings():
+    embeddings_index = {}
+    f = open(GLOVE_PATH, 'r')
+    for line in f:
+        values = line.split()
+        word = values[0]
+        coefs = np.asarray(values[1:], dtype='float32')
+        embeddings_index[word] = coefs
+    f.close()
+
+    embedding_matrix = np.zeros((vocab_size, embedding_dim))
+    for key, val in vocab.items():
+        embedding = embeddings_index.get(key)
+        if embedding is not None:
+            embedding_matrix[val] = embedding
+    pdb.set_trace()
+    return embedding_matrix
 
 if __name__ == "__main__":
     gen_vocab()
+    load_embeddings()
     pdb.set_trace()

@@ -3,9 +3,11 @@ from __future__ import print_function
 from keras.layers import Input, Dense
 from keras.models import Sequential, Model
 from keras.layers.embeddings import Embedding
+from keras.layers import Dropout
 from keras.layers.core import Lambda
 from keras.layers.core import Merge
 import keras.backend as K
+import os
 
 
 def MeanPool1D(x):
@@ -17,21 +19,27 @@ def MeanPool1D_shape(input_shape):
     return tuple(res)
 
 
-def modelQA(vocab_size, img_dim, wordvec_dim, inp_len):
+def modelQA(vocab_size, img_dim, wordvec_dim, inp_len, embeddings):
     # Returns the QA model
     x = Input(shape=(4096,))
     img_model = Model(input=x, output=x)
 
     text_model = Sequential()
-    text_model.add(Embedding(vocab_size, wordvec_dim, input_length=inp_len))#, mask_zero=True))
+    text_model.add(Embedding(vocab_size, wordvec_dim, weights=[embeddings], input_length=inp_len, trainable=False))#, mask_zero=True))
     text_model.add(Lambda(MeanPool1D, output_shape=MeanPool1D_shape))
 
     model = Sequential()
     model.add(Merge([img_model, text_model], mode='concat'))
+    model.add(Dropout(0.25))
+    model.add(Dense(300))
+    model.add(Dropout(0.25))
+    model.add(Dense(300))
+    model.add(Dropout(0.25))
     model.add(Dense(100))
+    model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
 
-    model.compile(optimizer='rmsprop', loss='binary_crossentropy', \
+    model.compile(optimizer='adam', loss='binary_crossentropy', \
                   metrics=['accuracy'])
 
     return model
