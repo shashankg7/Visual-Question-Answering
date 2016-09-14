@@ -15,7 +15,7 @@ import pdb
 
 IMG_DIR = '/home/shashank/data/VQA/dataset/VQAorg/Images/train2014/'
 
-def vqa_mlp(batch_size=32, epochs=10, max_len=5):
+def vqa_mlp(batch_size=64, epochs=100, max_len=5):
     vgg = VGG16(include_top=True, weights='imagenet')
     gen_vocab()
     embeddings = load_embeddings()
@@ -61,7 +61,7 @@ def vqa_mlp(batch_size=32, epochs=10, max_len=5):
             ques_feats = np.array(ques_feats)
             ques_feats = pad_sequences(ques_feats, 5)
             Img_feats = np.array(Img_feats)
-            Img_feats = Img_feats.reshape(batch_size, 4096)
+            Img_feats = Img_feats.reshape(len(Img_feats), 4096)
             # pdb.set_trace()
             loss, acc = model.train_on_batch([Img_feats, ques_feats], labels)
             print("Loss for epoch %d is %f with accuracy %f"%(epoch, loss, acc))

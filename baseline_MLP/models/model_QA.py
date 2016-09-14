@@ -22,14 +22,19 @@ def MeanPool1D_shape(input_shape):
 def modelQA(vocab_size, img_dim, wordvec_dim, inp_len, embeddings):
     # Returns the QA model
     x = Input(shape=(4096,))
-    img_model = Model(input=x, output=x)
+    img_model1 = Model(input=x, output=x)
+    img_model2 = Sequential()
+    img_model2.add(img_model1)
+    img_model2.add(Dense(300))
+
 
     text_model = Sequential()
     text_model.add(Embedding(vocab_size, wordvec_dim, weights=[embeddings], input_length=inp_len, trainable=False))#, mask_zero=True))
     text_model.add(Lambda(MeanPool1D, output_shape=MeanPool1D_shape))
+    text_model.add(Dense(300))
 
     model = Sequential()
-    model.add(Merge([img_model, text_model], mode='concat'))
+    model.add(Merge([img_model2, text_model], mode='mul'))
     model.add(Dropout(0.25))
     model.add(Dense(300))
     model.add(Dropout(0.25))
