@@ -149,7 +149,7 @@ def VGG16(include_top=True, weights='imagenet',
             if K.backend() == 'theano':
                 convert_all_kernels_in_model(model)
     # get features from second last layer of VGGnet
-    descriptor = K.function([img_input], model.layers[-2].output)
+    descriptor = K.function([img_input], [model.layers[-2].output])
     return descriptor
 
 
